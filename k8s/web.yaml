@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: web
-          image: registry.digitalocean.com/iness/web-dashboard:latest
+          image: registry.digitalocean.com/iness/web-dashboard:bce7ea6ebc0be447e9edeb356c61f849bb670c80
           ports:
             - containerPort: 3000
           env:
