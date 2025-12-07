@@ -22,6 +22,8 @@ spec:
           env:
             - name: PYTHON_AGENT_BASE_URL
               value: "http://python-api:8000"
+            - name: BINANCE_STREAM_URL
+              value: "wss://stream.binance.us:9443/ws/btcusdt@kline_1s"
 ---
 apiVersion: v1
 kind: Service
