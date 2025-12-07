@@ -65,21 +65,12 @@ jobs:
       - name: Fetch kubeconfig
         run: doctl kubernetes cluster kubeconfig save ${{ secrets.DOKS_CLUSTER_NAME }}
 
-      - name: Create/update registry secret in namespace
-        run: |
-          kubectl -n iness create secret docker-registry do-registry \
-            --docker-server=registry.digitalocean.com \
-            --docker-username=${{ secrets.DO_REGISTRY_USER }} \
-            --docker-password=${{ secrets.DO_REGISTRY_TOKEN }} \
-            --dry-run=client -o yaml | kubectl apply -f -
-
-      - name: Patch default serviceaccount to use registry secret
-        run: |
-          kubectl -n iness patch serviceaccount default \
-            -p '{"imagePullSecrets":[{"name":"do-registry"}]}'
+      - name: Connect DOCR to cluster
+        run: doctl registry kubernetes-manifest | kubectl apply -f -
 
       - name: Apply manifests
         run: |
           kubectl apply -f k8s/namespace.yaml
           kubectl apply -f k8s/
+  
   
