@@ -24,6 +24,7 @@ spec:
               value: "http://python-api:8000"
             - name: MARKET_BINANCE_STREAM_URL
               value: "wss://stream.binance.com:443/ws/btcusdt@kline_1s"
+
 ---
 apiVersion: v1
 kind: Service
