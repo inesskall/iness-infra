@@ -1,0 +1,48 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: iness-ingress
+  namespace: iness
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - iness.app
+      secretName: iness-tls
+  rules:
+    - host: iness.app
+      http:
+        paths:
+          - path: /api/agent
+            pathType: Prefix
+            backend:
+              service:
+                name: python-api
+                port:
+                  number: 8000
+
+          - path: /api/market
+            pathType: Prefix
+            backend:
+              service:
+                name: java-api
+                port:
+                  number: 8081
+
+          - path: /ws-market
+            pathType: Prefix
+            backend:
+              service:
+                name: java-api
+                port:
+                  number: 8081
+
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 3000
