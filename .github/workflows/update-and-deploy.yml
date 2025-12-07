@@ -3,9 +3,12 @@ name: update-image-and-deploy
 on:
   repository_dispatch:
     types: [ service_image_pushed ]
+  push:
+    branches: [ main ]
 
 jobs:
   update:
+    if: github.event_name == 'repository_dispatch'
     runs-on: ubuntu-latest
 
     steps:
@@ -50,7 +53,8 @@ jobs:
           git commit -m "deploy: update ${{ github.event.client_payload.service }} image to ${{ github.event.client_payload.tag }}" || exit 0
           git push
 
-  deploy:
+  deploy_dispatch:
+    if: github.event_name == 'repository_dispatch'
     needs: update
     runs-on: ubuntu-latest
 
@@ -72,5 +76,32 @@ jobs:
         run: |
           kubectl apply -f k8s/namespace.yaml
           kubectl apply -f k8s/
-  
-  
+
+  deploy_on_push:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DO_ACCESS_TOKEN }}
+
+      - name: Fetch kubeconfig
+        run: doctl kubernetes cluster kubeconfig save ${{ secrets.DOKS_CLUSTER_NAME }}
+
+      - name: Connect DOCR to cluster
+        run: doctl registry kubernetes-manifest | kubectl apply -f -
+
+      - name: Apply manifests
+        run: |
+          kubectl apply -f k8s/namespace.yaml
+          kubectl apply -f k8s/
+
+      # Если хочешь именно принудительный перезапуск всех деплойментов
+      - name: Rollout restart all deployments in namespace
+        run: |
+          kubectl -n iness rollout restart deploy --all
+          kubectl -n iness rollout status deploy --all
