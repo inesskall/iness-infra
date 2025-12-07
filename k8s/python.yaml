@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: python-api
-          image: registry.digitalocean.com/iness/python-agent:latest
+          image: registry.digitalocean.com/iness/python-agent:72ac3549d8de5a61a7f0622f73e875f4ca94cb68
           ports:
             - containerPort: 8000
           env:
