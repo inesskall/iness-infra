@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: java-api
-          image: registry.digitalocean.com/iness/java-market:6d8c5584e6aee552676a52759ce8ee0de95b8a07
+          image: registry.digitalocean.com/iness/java-market:d65cacd5a85f9e1cc8d0a97e8a390df8567b8e3e
           imagePullPolicy: Always
           ports:
             - containerPort: 8081
