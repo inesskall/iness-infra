@@ -100,8 +100,10 @@ jobs:
           kubectl apply -f k8s/namespace.yaml
           kubectl apply -f k8s/
 
-      # Если хочешь именно принудительный перезапуск всех деплойментов
       - name: Rollout restart all deployments in namespace
         run: |
-          kubectl -n iness rollout restart deploy --all
-          kubectl -n iness rollout status deploy --all
+          for d in $(kubectl -n iness get deploy -o name); do
+            kubectl -n iness rollout restart "$d"
+          done
+
+          kubectl -n iness get deploy -o name | xargs -r -n 1 kubectl -n iness rollout status --timeout=180s
